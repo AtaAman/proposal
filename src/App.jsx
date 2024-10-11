@@ -19,18 +19,15 @@ const DocxEditor = () => {
 
   const [docFile, setDocFile] = useState(null);
 
-  // Load the template on component mount
   useEffect(() => {
     const loadTemplate = async () => {
-      const response = await fetch("/demo.docx"); // Fetch the template file from the public folder
-      const blob = await response.blob(); // Convert it to a blob
+      const response = await fetch("/demo.docx"); 
+      const blob = await response.blob();
       const reader = new FileReader();
 
       reader.onload = function (event) {
         const content = event.target.result;
         const zip = new PizZip(content);
-
-        // Create an instance of Docxtemplater with custom delimiters
         try {
           const doc = new Docxtemplater(zip, {
             delimiters: { start: "<<", end: ">>" },
@@ -45,11 +42,11 @@ const DocxEditor = () => {
         }
       };
 
-      reader.readAsBinaryString(blob); // Read the blob as a binary string
+      reader.readAsBinaryString(blob);
     };
 
-    loadTemplate(); // Call the function to load the template
-  }, []); // Empty dependency array to run once
+    loadTemplate();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,8 +61,6 @@ const DocxEditor = () => {
       alert("Template is loading, please wait...");
       return;
     }
-
-    // Set the data for the placeholders using custom delimiters
     docFile.setData({
       CustomerName: formData.CustomerName || "Default Customer Name",
       ReferenceNo: formData.ReferenceNo || "Default Reference",
@@ -79,7 +74,6 @@ const DocxEditor = () => {
       ProjectSize: formData.ProjectSize || "Default Project Size",
     });
 
-    // Try to render the document and handle errors
     try {
       docFile.render();
       console.log("Document rendered successfully.");
@@ -96,10 +90,8 @@ const DocxEditor = () => {
           "An error occurred while rendering the document. Check the console for details."
         );
       }
-      return; // Exit early if there's an error
+      return;
     }
-
-    // Generate and download the modified file
     const output = docFile.getZip().generate({ type: "blob" });
     saveAs(output, "generated-proposal.docx");
   };
